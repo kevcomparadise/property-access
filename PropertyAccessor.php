@@ -491,7 +491,7 @@ class PropertyAccessor implements PropertyAccessorInterface
 
                 throw $e;
             }
-        } elseif ($object instanceof \stdClass && property_exists($object, $property)) {
+        } elseif (property_exists($object, $property) && array_key_exists($property, get_object_vars($object))) {
             $result[self::VALUE] = $object->$property;
             if (isset($zval[self::REF])) {
                 $result[self::REF] = &$object->$property;

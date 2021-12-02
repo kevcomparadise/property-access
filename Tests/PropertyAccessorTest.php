@@ -31,6 +31,7 @@ use Symfony\Component\PropertyAccess\Tests\Fixtures\TestClassMagicCall;
 use Symfony\Component\PropertyAccess\Tests\Fixtures\TestClassMagicGet;
 use Symfony\Component\PropertyAccess\Tests\Fixtures\TestClassSetValue;
 use Symfony\Component\PropertyAccess\Tests\Fixtures\TestClassTypeErrorInsideCall;
+use Symfony\Component\PropertyAccess\Tests\Fixtures\TestPublicPropertyGetterOnObject;
 use Symfony\Component\PropertyAccess\Tests\Fixtures\TestSingularAndPluralProps;
 use Symfony\Component\PropertyAccess\Tests\Fixtures\Ticket5775Object;
 use Symfony\Component\PropertyAccess\Tests\Fixtures\TypeHinted;
@@ -945,5 +946,22 @@ class PropertyAccessorTest extends TestCase
         $this->expectExceptionMessageMatches('/.*The method "setFoo" in class "Symfony\\\Component\\\PropertyAccess\\\Tests\\\Fixtures\\\TestClassSetValue" was found but does not have public access./');
         $object = new TestClassSetValue(0);
         $this->propertyAccessor->setValue($object, 'foo', 1);
+    }
+
+    public function testGetPublicProperty()
+    {
+        $value = 'A';
+        $path = 'a';
+        $object = new TestPublicPropertyGetterOnObject();
+
+        $this->assertSame($value, $this->propertyAccessor->getValue($object, $path));
+    }
+
+    public function testGetPrivateProperty()
+    {
+        $this->expectException(NoSuchPropertyException::class);
+        $this->expectExceptionMessageMatches('/.*Can\'t get a way to read the property "b" in class "Symfony\\\Component\\\PropertyAccess\\\Tests\\\Fixtures\\\TestPublicPropertyGetterOnObject./');
+        $object = new TestPublicPropertyGetterOnObject();
+        $this->propertyAccessor->getValue($object, 'b');
     }
 }
